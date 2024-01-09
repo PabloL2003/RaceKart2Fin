@@ -23,6 +23,16 @@ public:
 
 public:
 
+	PhysBody3D* object;
+	Cube* mushrooms[3] = { nullptr };
+
+	int numboosts = 3;
+
+	int accelerateTimer = 70;
+	int deceleration = 70;
+	bool deaccelerated = false;
+	bool boosting = false;
+
 	int coins = 0;
 	int extraAcceleration = 0;
 	vec3 cameraPt;

@@ -24,7 +24,7 @@ bool ModulePlayer::Start()
 	// Car properties ----------------------------------------
 	car.chassis_size.Set(2, 2, 4);
 	car.chassis_offset.Set(0, 1.5, 0);
-	car.mass = 500.0f;
+	car.mass = 700.0f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
 	car.suspensionDamping = 0.88f;
@@ -99,6 +99,23 @@ bool ModulePlayer::Start()
 
 	vehicle = App->physics->AddVehicle(car);
 	vehicle->SetPos(0, 12, 10);
+	float orbDistance = 4.0f;
+
+	for (int i = 0; i < 3; ++i) {
+		mushrooms[i] = new Cube(1, 1, 1);
+		
+		object = App->physics->AddBody(Cube(1, 1, 1), 1);
+		object->SetPos( i* 23 , 20, 10 + orbDistance);
+		mushrooms[i]->pbody = object;
+		App->physics->AddConstraintHinge(*vehicle, *object, vec3(0, 2, 0), vec3(0, 0, -orbDistance), vec3(0, 1, 0), vec3(0, 1, 0), true);
+		object->SetAsSensor(true);
+	}
+
+	
+
+	
+
+	
 	
 	return true;
 }
@@ -151,6 +168,33 @@ update_status ModulePlayer::Update(float dt)
 		acceleration += -MAX_ACCELERATION;
 	}
 
+	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && numboosts > 0) {
+		if(!boosting){ numboosts--; }
+		boosting = true;
+		
+	}
+	else if (!deaccelerated) {
+		vehicle->ApplyEngineForce(acceleration);
+	}
+
+	if (boosting) {
+		accelerateTimer--;
+		vehicle->ApplyEngineForce(MAX_ACCELERATION * 14);
+		if (accelerateTimer <= 0) {
+			boosting = false;
+			accelerateTimer = 70;
+			deaccelerated = true;
+		}
+	}
+
+	if (deaccelerated) {
+		deceleration--;
+		vehicle->ApplyEngineForce(-MAX_ACCELERATION *12 );  // Applying negative force for deacceleration
+		if (deceleration <= 0) {
+			deaccelerated = false;
+			deceleration = 70;
+		}
+	}
 	
 	btVector3 vehicleForwardVector = vehicle->GetForwardVector();
 	btVector3 cameraPt = vehicle->GetPosition() - vehicleForwardVector * 10.0f + btVector3(0.0f, 5.0f, 0.0f);
@@ -158,12 +202,16 @@ update_status ModulePlayer::Update(float dt)
 	App->camera->Look(btVecToMath2( cameraPt), btVecToMath2( vehicle->GetPosition()), true);
 
 
-	vehicle->ApplyEngineForce(acceleration);
+	
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
 	
 
 	vehicle->Render();
+	for (int i = 0; i < numboosts; ++i) {
+		mushrooms[i]->Update(mushrooms[i]->pbody);
+	}
+
 
 	char title[80];
 	sprintf_s(title, "%.1f Km/h   Coins: %d   DragForce = %f, ,%f , %f ", vehicle->GetKmh(), coins, myDrag.x() , myDrag.y() , myDrag.z());
