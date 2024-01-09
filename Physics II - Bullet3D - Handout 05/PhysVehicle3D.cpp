@@ -37,16 +37,16 @@ void PhysVehicle3D::Render()
     mainBody.color = Red; // Set the color of the body
     mainBody.Render();
 
-    // Render additional cubes to form the kart body
-    Cube frontSpoiler(info.chassis_size.x * 0.8f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.2f);
-    frontSpoiler.color = Red;
-    frontSpoiler.SetPos(mainBody.transform.M[12], mainBody.transform.M[13] + info.chassis_size.y * 0.5f, mainBody.transform.M[14] + info.chassis_size.z * 0.5f);
-    frontSpoiler.Render();
+    //// Render additional cubes to form the kart body
+    //Cube frontSpoiler(info.chassis_size.x * 0.8f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.2f);
+    //frontSpoiler.color = Red;
+    //frontSpoiler.SetPos(mainBody.transform.M[12], mainBody.transform.M[13] + info.chassis_size.y * 0.5f, mainBody.transform.M[14] + info.chassis_size.z * 0.5f);
+    //frontSpoiler.Render();
 
-    Cube rearSpoiler(info.chassis_size.x * 0.8f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.2f);
-    rearSpoiler.color = Red;
-    rearSpoiler.SetPos(mainBody.transform.M[12], mainBody.transform.M[13] + info.chassis_size.y * 0.5f, mainBody.transform.M[14] - info.chassis_size.z * 0.5f);
-    rearSpoiler.Render();
+    //Cube rearSpoiler(info.chassis_size.x * 0.8f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.2f);
+    //rearSpoiler.color = Red;
+    //rearSpoiler.SetPos(mainBody.transform.M[12], mainBody.transform.M[13] + info.chassis_size.y * 0.5f, mainBody.transform.M[14] - info.chassis_size.z * 0.5f);
+    //rearSpoiler.Render();
 
     // Render kart wheels
     Cylinder wheel;
