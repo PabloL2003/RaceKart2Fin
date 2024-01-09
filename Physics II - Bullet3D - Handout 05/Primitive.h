@@ -36,6 +36,8 @@ public:
 	mat4x4 transform;
 	bool axis,wire;
 
+	PhysBody3D* pbody = nullptr;
+
 protected:
 	PrimitiveTypes type;
 };
