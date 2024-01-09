@@ -24,10 +24,10 @@ PhysVehicle3D::~PhysVehicle3D()
 void PhysVehicle3D::Render()
 {
     // Render kart body
-    Cube mainBody(info.chassis_size.x, info.chassis_size.y/8, info.chassis_size.z);
+    Cube mainBody(info.chassis_size.x*0.9f, info.chassis_size.y * 0.2f, info.chassis_size.z);
     vehicle->getChassisWorldTransform().getOpenGLMatrix(&mainBody.transform);
     btQuaternion q = vehicle->getChassisWorldTransform().getRotation();
-    btVector3 offset(info.chassis_offset.x, info.chassis_offset.y/4, info.chassis_offset.z);
+    btVector3 offset(info.chassis_offset.x, info.chassis_offset.y*0.3f, info.chassis_offset.z);
     offset = offset.rotate(q.getAxis(), q.getAngle());
 
     mainBody.transform.M[12] += offset.getX();
@@ -99,15 +99,81 @@ void PhysVehicle3D::Render()
 
     frontBumperTransform.getOpenGLMatrix(&frontBumper.transform);
     frontBumper.Render();
+
+    // Side spoilers
+    // Render Left Spoiler
+    Cube leftSpoiler(info.chassis_size.x * 0.2f, info.chassis_size.y * 0.1f, info.chassis_size.z * 1.0f);
+    leftSpoiler.color = White;
+    btTransform leftSpoilerTransform = vehicle->getChassisWorldTransform();
+    btQuaternion leftSpoilerRotation = leftSpoilerTransform.getRotation();
+    btVector3 leftSpoilerOffset(info.chassis_size.x*0.5, info.chassis_size.y*0.3, -info.chassis_size.z * 0.2f);
+    leftSpoilerOffset = leftSpoilerOffset.rotate(leftSpoilerRotation.getAxis(), leftSpoilerRotation.getAngle());
+    leftSpoilerTransform.setOrigin(leftSpoilerTransform.getOrigin() + leftSpoilerOffset);
+    leftSpoilerTransform.setRotation(leftSpoilerRotation);
+    leftSpoilerTransform.getOpenGLMatrix(&leftSpoiler.transform);
+    leftSpoiler.Render();
+
+    // Render Right Spoiler
+    Cube rightSpoiler(info.chassis_size.x * 0.2f, info.chassis_size.y * 0.1f, info.chassis_size.z * 1.0f);
+    rightSpoiler.color = White;
+    btTransform rightSpoilerTransform = vehicle->getChassisWorldTransform();
+    btQuaternion rightSpoilerRotation = rightSpoilerTransform.getRotation();
+    btVector3 rightSpoilerOffset(-info.chassis_size.x * 0.5, info.chassis_size.y * 0.3, -info.chassis_size.z * 0.2f);
+    rightSpoilerOffset = rightSpoilerOffset.rotate(rightSpoilerRotation.getAxis(), rightSpoilerRotation.getAngle());
+    rightSpoilerTransform.setOrigin(rightSpoilerTransform.getOrigin() + rightSpoilerOffset);
+    rightSpoilerTransform.setRotation(rightSpoilerRotation);
+    rightSpoilerTransform.getOpenGLMatrix(&rightSpoiler.transform);
+    rightSpoiler.Render();
+
+    // Render exhaust pipes
+    Cylinder exhaustPipe1;
+    exhaustPipe1.color = Black;
+    exhaustPipe1.radius = info.chassis_size.y * 0.07f;
+    exhaustPipe1.height = info.chassis_size.x * 0.5f;
+    btTransform exhaustPipe1Transform = vehicle->getChassisWorldTransform();
+    btQuaternion exhaustPipe1Rotation = exhaustPipe1Transform.getRotation();
+    btVector3 exhaustPipe1Offset(info.chassis_size.x * 0.2f, info.chassis_size.y * 0.2f, -info.chassis_size.z * 0.5f);
+    exhaustPipe1Offset = exhaustPipe1Offset.rotate(exhaustPipe1Rotation.getAxis(), exhaustPipe1Rotation.getAngle());
+    exhaustPipe1Transform.setOrigin(exhaustPipe1Transform.getOrigin() + exhaustPipe1Offset);
+    exhaustPipe1Rotation *= btQuaternion(btVector3(0, 1, 0), SIMD_PI / 2.0); 
+    exhaustPipe1Transform.setRotation(exhaustPipe1Rotation);
+    exhaustPipe1Transform.getOpenGLMatrix(&exhaustPipe1.transform);
+    exhaustPipe1.Render();
+
+    Cylinder exhaustPipe2;
+    exhaustPipe2.color = Black;
+    exhaustPipe2.radius = info.chassis_size.y * 0.07f;
+    exhaustPipe2.height = info.chassis_size.x * 0.5f;
+    btTransform exhaustPipe2Transform = vehicle->getChassisWorldTransform();
+    btQuaternion exhaustPipe2Rotation = exhaustPipe2Transform.getRotation();
+    btVector3 exhaustPipe2Offset(-info.chassis_size.x * 0.2f, info.chassis_size.y * 0.2f, -info.chassis_size.z * 0.5f);
+    exhaustPipe2Offset = exhaustPipe2Offset.rotate(exhaustPipe2Rotation.getAxis(), exhaustPipe2Rotation.getAngle());
+    exhaustPipe2Transform.setOrigin(exhaustPipe2Transform.getOrigin() + exhaustPipe2Offset);
+    exhaustPipe2Rotation *= btQuaternion(btVector3(0, 1, 0), SIMD_PI / 2.0); 
+    exhaustPipe2Transform.setRotation(exhaustPipe2Rotation);
+    exhaustPipe2Transform.getOpenGLMatrix(&exhaustPipe2.transform);
+    exhaustPipe2.Render();
+
+    //Render seat
+    Cube seat(info.chassis_size.x*0.5f, info.chassis_size.y*0.8f, info.chassis_size.z*0.1f);
+    seat.color = White;
+    btTransform seatTransform = vehicle->getChassisWorldTransform();
+    btQuaternion seatRotation = seatTransform.getRotation();
+    btVector3 seatOffset(0.0, info.chassis_size.y * 0.3, info.chassis_size.z * 0.1f);
+    seatOffset = seatOffset.rotate(seatRotation.getAxis(), seatRotation.getAngle());
+    seatTransform.setOrigin(seatTransform.getOrigin() + seatOffset);
+    seatTransform.setRotation(seatRotation);
+    seatTransform.getOpenGLMatrix(&seat.transform);
+    seat.Render();
     
     // Render kart wheels
     Cylinder wheel;
-    wheel.color = Blue;
+    wheel.color = Black;
 
     for (int i = 0; i < vehicle->getNumWheels(); ++i)
     {
-        wheel.radius = info.wheels[0].radius;
-        wheel.height = info.wheels[0].width;
+        wheel.radius = info.wheels[0].radius * 0.7f;
+        wheel.height = info.wheels[0].width * 0.7f;
 
         vehicle->updateWheelTransform(i);
         vehicle->getWheelInfo(i).m_worldTransform.getOpenGLMatrix(&wheel.transform);
