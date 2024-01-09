@@ -51,10 +51,13 @@ void PhysVehicle3D::Render()
     frontSpoiler.Render();
 
     // Rotation angle for the aileron effect
-    float aileronAngle = 0.5f;
+    float aileronAngle = 0.4f;
+
+    // Rotation angle for the front bumper
+    float bumperAngle = 0.9f;
 
     // Render rear spoiler as an aileron
-    Cube rearSpoiler(info.chassis_size.x * 0.8f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.2f);
+    Cube rearSpoiler(info.chassis_size.x * 0.7f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.2f);
     rearSpoiler.color = White;
     btTransform rearSpoilerTransform = vehicle->getChassisWorldTransform();
     btQuaternion rearSpoilerRotation = rearSpoilerTransform.getRotation();
@@ -68,9 +71,35 @@ void PhysVehicle3D::Render()
 
     rearSpoilerTransform.getOpenGLMatrix(&rearSpoiler.transform);
     rearSpoiler.Render();
+
+    //Render aileron union
+    Cube aileronUnion(info.chassis_size.x * 0.1f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.1f);
+    aileronUnion.color = White;
+    btTransform aileronUnionTransform = vehicle->getChassisWorldTransform();
+    btQuaternion aileronUnionRotation = aileronUnionTransform.getRotation();
+    btVector3 aileronUnionOffset(0.0f, info.chassis_size.y * 0.4f, -info.chassis_size.z * 0.45f);
+    aileronUnionOffset = aileronUnionOffset.rotate(aileronUnionRotation.getAxis(), frontSpoilerRotation.getAngle());
+    aileronUnionTransform.setOrigin(aileronUnionTransform.getOrigin() + aileronUnionOffset);
+    aileronUnionTransform.setRotation(aileronUnionRotation);
+    aileronUnionTransform.getOpenGLMatrix(&aileronUnion.transform);
+    aileronUnion.Render();
+
+    // Render front bumper
+    Cube frontBumper(info.chassis_size.x * 0.9f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.2f);
+    frontBumper.color = White;
+    btTransform frontBumperTransform = vehicle->getChassisWorldTransform();
+    btQuaternion frontBumperRotation = frontBumperTransform.getRotation();
+    btVector3 frontBumperOffset(0.0f, info.chassis_size.y * 0.4f, info.chassis_size.z * 0.5f);
+    frontBumperOffset = frontBumperOffset.rotate(frontBumperRotation.getAxis(), frontBumperRotation.getAngle());
+    frontBumperTransform.setOrigin(frontBumperTransform.getOrigin() + frontBumperOffset);
+
+    // Apply aileron effect to the rear spoiler
+    frontBumperRotation *= btQuaternion(btVector3(1, 0, 0), bumperAngle);
+    frontBumperTransform.setRotation(frontBumperRotation);
+
+    frontBumperTransform.getOpenGLMatrix(&frontBumper.transform);
+    frontBumper.Render();
     
-
-
     // Render kart wheels
     Cylinder wheel;
     wheel.color = Blue;
