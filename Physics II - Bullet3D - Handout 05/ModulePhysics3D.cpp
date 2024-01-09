@@ -203,6 +203,7 @@ update_status ModulePhysics3D::Update(float dt)
 
 
 
+
 	return UPDATE_CONTINUE;
 }
 
@@ -362,6 +363,36 @@ Coin* ModulePhysics3D:: AddCoin(const Cylinder& cylinder, float mass) {
 	Coin* pbody = new Coin(body);
 	pbody->Awake();
 	
+
+	body->setUserPointer(pbody);
+	world->addRigidBody(body);
+	bodies.add(pbody);
+
+	return pbody;
+}
+
+Pipe* ModulePhysics3D::AddPipe(const Cylinder& cylinder) {
+
+	float mass = 9999999;
+
+	btCollisionShape* colShape = new btCylinderShapeX(btVector3(cylinder.height * 0.5f, cylinder.radius, 0.0f));
+	shapes.add(colShape);
+
+	btTransform startTransform;
+	startTransform.setFromOpenGLMatrix(&cylinder.transform);
+
+	btVector3 localInertia(0, 0, 0);
+	if (mass != 0.f)
+		colShape->calculateLocalInertia(mass, localInertia);
+
+	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+	motions.add(myMotionState);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
+
+	btRigidBody* body = new btRigidBody(rbInfo);
+	Pipe* pbody = new Pipe( body );
+	//pbody->Awake();
+
 
 	body->setUserPointer(pbody);
 	world->addRigidBody(body);

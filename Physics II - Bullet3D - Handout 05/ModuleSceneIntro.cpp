@@ -161,6 +161,18 @@ bool ModuleSceneIntro::Start()
 		c->collision_listeners.add(this);
 
 	}
+	for (int i = 0; i < 3; ++i) {
+		
+		Cylinder* C = new Cylinder(1, 4);
+		C->SetPos(i * 5, 4, i * 6);
+		Pipe* P = App->physics->AddPipe(*C);
+		P->c1 = C;
+		myPipes.add(P);
+		Cylinder* CCC = new Cylinder(1, 1);
+		P->c2 = CCC;
+		P->c2->SetPos(i * 5, 7, i * 6);
+		
+	}
 
 
 	return ret;
@@ -223,7 +235,21 @@ update_status ModuleSceneIntro::Update(float dt)
 		}
 	}
 
+	p2List_item<Pipe*>* currentItemP = myPipes.getFirst();
 
+	while (currentItemP != NULL) {
+
+		if (currentItemP->data->pendingToDelete == false) {
+			
+
+			currentItemP->data->c1->Update(currentItemP->data);
+
+			currentItemP = currentItemP->next;
+		}
+		else {
+			currentItemP = currentItemP->next;
+		}
+	}
 
 
 	return UPDATE_CONTINUE;
