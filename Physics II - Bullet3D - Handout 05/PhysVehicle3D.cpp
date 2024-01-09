@@ -24,7 +24,7 @@ PhysVehicle3D::~PhysVehicle3D()
 void PhysVehicle3D::Render()
 {
     // Render kart body
-    Cube mainBody(info.chassis_size.x, info.chassis_size.y/4, info.chassis_size.z);
+    Cube mainBody(info.chassis_size.x, info.chassis_size.y/8, info.chassis_size.z);
     vehicle->getChassisWorldTransform().getOpenGLMatrix(&mainBody.transform);
     btQuaternion q = vehicle->getChassisWorldTransform().getRotation();
     btVector3 offset(info.chassis_offset.x, info.chassis_offset.y/4, info.chassis_offset.z);
@@ -37,16 +37,37 @@ void PhysVehicle3D::Render()
     mainBody.color = Red; // Set the color of the body
     mainBody.Render();
 
-    //// Render additional cubes to form the kart body
-    //Cube frontSpoiler(info.chassis_size.x * 0.8f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.2f);
-    //frontSpoiler.color = Red;
-    //frontSpoiler.SetPos(mainBody.transform.M[12], mainBody.transform.M[13] + info.chassis_size.y * 0.5f, mainBody.transform.M[14] + info.chassis_size.z * 0.5f);
-    //frontSpoiler.Render();
+    // Render additional cubes to form the kart body
+    Cube frontSpoiler(info.chassis_size.x * 0.8f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.2f);
+    frontSpoiler.color = White;
+    btTransform frontSpoilerTransform = vehicle->getChassisWorldTransform();
+    btQuaternion frontSpoilerRotation = frontSpoilerTransform.getRotation();
+    btVector3 frontSpoilerOffset(0.0f, info.chassis_size.y * 0.3f, info.chassis_size.z * 0.5f);
+    frontSpoilerOffset = frontSpoilerOffset.rotate(frontSpoilerRotation.getAxis(), frontSpoilerRotation.getAngle());
+    frontSpoilerTransform.setOrigin(frontSpoilerTransform.getOrigin() + frontSpoilerOffset);
+    frontSpoilerTransform.setRotation(frontSpoilerRotation);
+    frontSpoilerTransform.getOpenGLMatrix(&frontSpoiler.transform);
+    frontSpoiler.Render();
 
-    //Cube rearSpoiler(info.chassis_size.x * 0.8f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.2f);
-    //rearSpoiler.color = Red;
-    //rearSpoiler.SetPos(mainBody.transform.M[12], mainBody.transform.M[13] + info.chassis_size.y * 0.5f, mainBody.transform.M[14] - info.chassis_size.z * 0.5f);
-    //rearSpoiler.Render();
+    // Rotation angle for the aileron effect
+    float aileronAngle = 0.5f;
+
+    // Render rear spoiler as an aileron
+    Cube rearSpoiler(info.chassis_size.x * 0.8f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.2f);
+    rearSpoiler.color = White;
+    btTransform rearSpoilerTransform = vehicle->getChassisWorldTransform();
+    btQuaternion rearSpoilerRotation = rearSpoilerTransform.getRotation();
+    btVector3 rearSpoilerOffset(0.0f, info.chassis_size.y * 0.5f, -info.chassis_size.z * 0.5f);
+    rearSpoilerOffset = rearSpoilerOffset.rotate(rearSpoilerRotation.getAxis(), rearSpoilerRotation.getAngle());
+    rearSpoilerTransform.setOrigin(rearSpoilerTransform.getOrigin() + rearSpoilerOffset);
+
+    // Apply aileron effect to the rear spoiler
+    rearSpoilerRotation *= btQuaternion(btVector3(1, 0, 0), aileronAngle);
+    rearSpoilerTransform.setRotation(rearSpoilerRotation);
+
+    rearSpoilerTransform.getOpenGLMatrix(&rearSpoiler.transform);
+    rearSpoiler.Render();
+    
 
     // Render kart wheels
     Cylinder wheel;
