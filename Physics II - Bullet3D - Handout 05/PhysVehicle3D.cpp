@@ -39,6 +39,7 @@ void PhysVehicle3D::Render()
 
     // Render additional cubes to form the kart body
     Cube frontSpoiler(info.chassis_size.x * 0.8f, info.chassis_size.y * 0.1f, info.chassis_size.z * 0.2f);
+
     frontSpoiler.color = White;
     btTransform frontSpoilerTransform = vehicle->getChassisWorldTransform();
     btQuaternion frontSpoilerRotation = frontSpoilerTransform.getRotation();
@@ -68,6 +69,7 @@ void PhysVehicle3D::Render()
     rearSpoilerTransform.getOpenGLMatrix(&rearSpoiler.transform);
     rearSpoiler.Render();
     
+
 
     // Render kart wheels
     Cylinder wheel;
