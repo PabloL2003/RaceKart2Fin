@@ -51,6 +51,7 @@ public:
 	Cube box;
 
 	p2List<Coin*> myCoins;
+	p2List<Pipe*> myPipes;
 
 	p2List<Cube> Borderblocks;
 };

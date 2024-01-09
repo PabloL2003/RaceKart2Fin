@@ -150,10 +150,12 @@ bool ModuleSceneIntro::Start()
 	addCube({ -77,0,100 }, { 7,0.3f,50 }, { 1,1,1 }, 0, -340, 0, 2);
 
 
-	 //rampa//
+	 //rampas//
 	/*addCube({ 0,0,0 }, { 6,0.3f,60 }, { 1,1,1 }, 0, 0, 0);*/
 	addCube({ -82,0,50 }, { 4,0.3f,10 }, { 1,1,1 }, 20, 0, 0,2);
 	addCube({ -88,0,-15 }, { 4,0.3f,10 }, { 1,1,1 }, 20, 0, 0, 2);
+	addCube({ 34,0,-85 }, { 4,0.3f,15 }, { 1,1,1 }, -15, 0, 0, 2);
+
 
 	for (int i = 0; i < 20; ++i) {
 
@@ -164,6 +166,18 @@ bool ModuleSceneIntro::Start()
 		c->Shape->color = Color(1, 1, 0, 1);
 		c->collision_listeners.add(this);
 
+	}
+	for (int i = 0; i < 3; ++i) {
+		
+		Cylinder* C = new Cylinder(1, 4);
+		C->SetPos(i * 5, 4, i * 6);
+		Pipe* P = App->physics->AddPipe(*C);
+		P->c1 = C;
+		myPipes.add(P);
+		Cylinder* CCC = new Cylinder(1, 1);
+		P->c2 = CCC;
+		P->c2->SetPos(i * 5, 7, i * 6);
+		
 	}
 
 
@@ -227,7 +241,21 @@ update_status ModuleSceneIntro::Update(float dt)
 		}
 	}
 
+	p2List_item<Pipe*>* currentItemP = myPipes.getFirst();
 
+	while (currentItemP != NULL) {
+
+		if (currentItemP->data->pendingToDelete == false) {
+			
+
+			currentItemP->data->c1->Update(currentItemP->data);
+
+			currentItemP = currentItemP->next;
+		}
+		else {
+			currentItemP = currentItemP->next;
+		}
+	}
 
 
 	return UPDATE_CONTINUE;
