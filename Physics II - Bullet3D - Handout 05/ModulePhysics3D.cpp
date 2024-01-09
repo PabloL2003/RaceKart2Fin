@@ -81,8 +81,8 @@ vec3 ModulePhysics3D::ApplyAerodynamics(PhysBody3D* body, float deltaTime)
 	//The formula for aerodynamic drag is: Drag = 0.5 * airDensity * velocity^2 * dragCoefficient * area
 	//airDensity = 1.225 (at sea level and at 15 °C), and area = 1 for simplicity
 
-	 float dragCoefficient = 0.47f*100;
-	float airDensity = 1.225f*100;
+	 float dragCoefficient = 0.47f;
+	float airDensity = 1.225f;
 	float area = 2.0f;
 	float Vsquared = pow(body->body->getLinearVelocity().x(), 2) + pow(body->body->getLinearVelocity().y(), 2) + pow(body->body->getLinearVelocity().z(), 2);
 	float dragForce = 0.5f * airDensity * Vsquared * dragCoefficient * area;
@@ -120,8 +120,12 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 	vec3 dragF = ApplyAerodynamics(App->player->vehicle, dt);
 	btVector3 DragVec = btVector3(dragF.x, dragF.y, dragF.z); 
 	App->player->myDrag = DragVec;
+	
 
-	App->player->vehicle->body->applyCentralForce(DragVec);
+	// uncomment to disable gravity
+	//App->player->vehicle->body->applyCentralForce(-( GRAVITY * 700.0));
+	App->player->vehicle->body->applyCentralForce(DragVec); /*Check that the apply central force is in global scale*/
+	// should also negate the box's weight
 
 	world->stepSimulation(dt, 15);
 
@@ -180,7 +184,7 @@ update_status ModulePhysics3D::Update(float dt)
 	{
 		world->debugDrawWorld();
 
-		// Render vehicles
+		// Render vehicles                                      
 		p2List_item<PhysVehicle3D*>* item = vehicles.getFirst();
 		while(item)
 		{
@@ -191,7 +195,7 @@ update_status ModulePhysics3D::Update(float dt)
 		if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 		{
 			Sphere s(1);
-			s.SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
+			s.SetPos(App->camera->Position.x                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                , App->camera->Position.y, App->camera->Position.z);
 			float force = 30.0f;
 			AddBody(s)->Push(-(App->camera->Z.x * force), -(App->camera->Z.y * force), -(App->camera->Z.z * force));
 		}
