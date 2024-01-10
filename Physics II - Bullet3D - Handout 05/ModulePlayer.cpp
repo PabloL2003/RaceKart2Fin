@@ -6,6 +6,8 @@
 #include "PhysBody3D.h"
 #include "ModuleCamera3D.h"
 
+#define COIN_REQUIREMENT 10
+
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled), vehicle(NULL)
 {
 	turn = acceleration = brake = 0.0f;
@@ -172,14 +174,25 @@ update_status ModulePlayer::Update(float dt)
 		if(!boosting){ numboosts--; }
 		boosting = true;
 		
+		
 	}
 	else if (!deaccelerated) {
 		vehicle->ApplyEngineForce(acceleration);
 	}
 
+	if (coins > 10) {
+
+		// make win function
+
+
+	}
+
+	// Boosting power logic
+
 	if (boosting) {
 		accelerateTimer--;
-		vehicle->ApplyEngineForce(MAX_ACCELERATION * 14);
+		vehicle->body->setAngularVelocity(btVector3(0,0,0));
+		vehicle->ApplyEngineForce(MAX_ACCELERATION * 17);
 		if (accelerateTimer <= 0) {
 			boosting = false;
 			accelerateTimer = 70;
@@ -189,12 +202,23 @@ update_status ModulePlayer::Update(float dt)
 
 	if (deaccelerated) {
 		deceleration--;
+		
 		vehicle->ApplyEngineForce(-MAX_ACCELERATION *12 );  // Applying negative force for deacceleration
 		if (deceleration <= 0) {
 			deaccelerated = false;
 			deceleration = 70;
 		}
 	}
+
+	// To reset player position if turned
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT)
+	{
+		btVector3 p = vehicle->GetPosition();
+		vehicle->ResetCarOrientation(0);
+		vehicle->SetPos(p.x(), p.y(), p.z());
+
+	}
+
 	
 	btVector3 vehicleForwardVector = vehicle->GetForwardVector();
 	btVector3 cameraPt = vehicle->GetPosition() - vehicleForwardVector * 10.0f + btVector3(0.0f, 5.0f, 0.0f);

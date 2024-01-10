@@ -5,6 +5,7 @@
 #include "PhysVehicle3D.h"
 #include "Primitive.h"
 #include "coin.h"
+#include "Pippe.h"
 #include "ModuleCamera3D.h"
 
 
@@ -96,7 +97,7 @@ vec3 ModulePhysics3D::ApplyAerodynamics(PhysBody3D* body, float deltaTime)
 	vec3 dragForceVec = vec3(0, 0, 0);
 
 	// Check if the magnitude is greater than a small threshold to avoid division by zero
-	if (magnitude > 1e-6) // You can adjust the threshold based on your needs
+	if (magnitude > 1e-6) 
 	{
 		// Normalize the linear velocity manually
 		btVector3 normalizedLinearVelocity = linearVelocity / magnitude;
@@ -121,9 +122,16 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 	btVector3 DragVec = btVector3(dragF.x, dragF.y, dragF.z); 
 	App->player->myDrag = DragVec;
 	
+	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN) {
+		if(!antiGravity){antiGravity = true;}
+		else { antiGravity = false; }
+	}
 
 	// uncomment to disable gravity
-	//App->player->vehicle->body->applyCentralForce(-( GRAVITY * 700.0));
+	if (antiGravity) {
+		App->player->vehicle->body->applyCentralForce(-(GRAVITY * 700.0));
+	}
+	
 	App->player->vehicle->body->applyCentralForce(DragVec); /*Check that the apply central force is in global scale*/
 	// should also negate the box's weight
 
@@ -199,6 +207,8 @@ update_status ModulePhysics3D::Update(float dt)
 			float force = 30.0f;
 			AddBody(s)->Push(-(App->camera->Z.x * force), -(App->camera->Z.y * force), -(App->camera->Z.z * force));
 		}
+
+
 	}
 
 
@@ -375,15 +385,15 @@ Coin* ModulePhysics3D:: AddCoin(const Cylinder& cylinder, float mass) {
 	return pbody;
 }
 
-Pipe* ModulePhysics3D::AddPipe(const Cylinder& cylinder) {
+Pipe* ModulePhysics3D::AddPipe(vec3 position, int height, Color colour) {
 
-	float mass = 9999999;
-
-	btCollisionShape* colShape = new btCylinderShapeX(btVector3(cylinder.height * 0.5f, cylinder.radius, 0.0f));
+	Cylinder cylinder1 = Cylinder(2, height);
+	float mass = 9999999999;
+	btCollisionShape* colShape = new btCylinderShapeX(btVector3(cylinder1.height * 0.5f, cylinder1.radius, 0.0f));
 	shapes.add(colShape);
 
 	btTransform startTransform;
-	startTransform.setFromOpenGLMatrix(&cylinder.transform);
+	startTransform.setFromOpenGLMatrix(&cylinder1.transform);
 
 	btVector3 localInertia(0, 0, 0);
 	if (mass != 0.f)
@@ -391,18 +401,70 @@ Pipe* ModulePhysics3D::AddPipe(const Cylinder& cylinder) {
 
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 	motions.add(myMotionState);
+
+
+	btQuaternion initialRotation;
+
+	initialRotation.setRotation(btVector3(0.0, 0, 1.0), SIMD_PI / 2.0); // 90 degrees in radians
+
+	myMotionState->m_graphicsWorldTrans.setRotation(initialRotation);
+
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
 
-	btRigidBody* body = new btRigidBody(rbInfo);
-	Pipe* pbody = new Pipe( body );
-	//pbody->Awake();
+	// Set the restitution (bounciness) here
+	rbInfo.m_restitution = 10000;
 
+	btRigidBody* body = new btRigidBody(rbInfo);
+
+	Cylinder cylinder2 = Cylinder(2.5f, 1);
+	float mass2 = 9999999999;
+	btCollisionShape* colShape2 = new btCylinderShapeX(btVector3(cylinder2.height * 0.5f, cylinder2.radius, 0.0f));
+	shapes.add(colShape2);
+
+	btTransform startTransform2;
+	startTransform2.setFromOpenGLMatrix(&cylinder2.transform);
+
+	btVector3 localInertia2(0, 0, 0);
+	if (mass2 != 0.f)
+		colShape2->calculateLocalInertia(mass2, localInertia2);
+
+	btDefaultMotionState* myMotionState2 = new btDefaultMotionState(startTransform2);
+	motions.add(myMotionState2);
+
+
+	btQuaternion initialRotation2;
+
+	initialRotation2.setRotation(btVector3(0.0, 0, 1.0), SIMD_PI / 2.0); // 90 degrees in radians
+
+	myMotionState2->m_graphicsWorldTrans.setRotation(initialRotation2);
+
+	btRigidBody::btRigidBodyConstructionInfo rbInfo2(mass2, myMotionState2, colShape2, localInertia2);
+
+	// Set the restitution (bounciness) here
+	rbInfo2.m_restitution = 10000;
+
+	btRigidBody* body2 = new btRigidBody(rbInfo2);
+
+	PhysBody3D* pbody = new PhysBody3D(body);
+	PhysBody3D* pbody2 = new PhysBody3D(body2);
+
+
+
+	Pipe* pip = new Pipe(pbody, pbody2, colour, height);
+
+	pbody->SetPos(position.x, position.y, position.z);
+	pbody2->SetPos(position.x, position.y + height/2, position.z);
 
 	body->setUserPointer(pbody);
 	world->addRigidBody(body);
 	bodies.add(pbody);
+	body->setUserPointer(pbody2);
+	world->addRigidBody(body2);
+	bodies.add(pbody2);
 
-	return pbody;
+
+
+	return pip;
 }
 
 // ---------------------------------------------------------

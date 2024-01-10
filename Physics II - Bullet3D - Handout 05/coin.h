@@ -56,15 +56,6 @@ public:
 
 };
 
-class Pipe :public PhysBody3D {
 
-public:
-
-	Pipe(btRigidBody* body) :PhysBody3D(body) {};
-
-	Cylinder* c1;
-	Cylinder* c2;
-
-};
 
 #endif // __COIN_H__

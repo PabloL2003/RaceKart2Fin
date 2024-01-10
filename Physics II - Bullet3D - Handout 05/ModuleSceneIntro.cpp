@@ -5,6 +5,7 @@
 #include "PhysBody3D.h"
 #include "ModuleAudio.h"
 #include "ModulePlayer.h"
+#include "Pippe.h"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -167,18 +168,13 @@ bool ModuleSceneIntro::Start()
 		c->collision_listeners.add(this);
 
 	}
-	for (int i = 0; i < 3; ++i) {
+	
+	Pipe* myPipe = App->physics->AddPipe(vec3(0, 3, 6), 8, Color{0, 0.6588 ,0});
+		myPipes.add(myPipe);
 		
-		Cylinder* C = new Cylinder(1, 4);
-		C->SetPos(i * 5, 4, i * 6);
-		Pipe* P = App->physics->AddPipe(*C);
-		P->c1 = C;
-		myPipes.add(P);
-		Cylinder* CCC = new Cylinder(1, 1);
-		P->c2 = CCC;
-		P->c2->SetPos(i * 5, 7, i * 6);
-		
-	}
+		Pipe* myPipe2 = App->physics->AddPipe(vec3(5, 3, 5), 4, Color{ 1, 0 ,0 });
+		myPipes.add(myPipe2);
+	
 
 
 	return ret;
@@ -245,16 +241,8 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	while (currentItemP != NULL) {
 
-		if (currentItemP->data->pendingToDelete == false) {
-			
-
-			currentItemP->data->c1->Update(currentItemP->data);
-
-			currentItemP = currentItemP->next;
-		}
-		else {
-			currentItemP = currentItemP->next;
-		}
+		currentItemP->data->Update();
+		currentItemP = currentItemP->next;
 	}
 
 

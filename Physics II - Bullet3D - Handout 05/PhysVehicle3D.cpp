@@ -223,3 +223,17 @@ float PhysVehicle3D::GetKmh() const
 {
 	return vehicle->getCurrentSpeedKmHour();
 }
+
+void PhysVehicle3D::ResetCarOrientation(float angle)
+{
+    float orientationMat[16];
+    memset(orientationMat, 0.0f, sizeof(orientationMat));
+
+    orientationMat[0] = cos(angle);
+    orientationMat[2] = -sin(angle);
+    orientationMat[5] = 1;
+    orientationMat[8] = sin(angle);
+    orientationMat[10] = cos(angle);
+
+    SetTransform(orientationMat);
+}

@@ -5,12 +5,14 @@
 #include "Globals.h"
 #include "Primitive.h"
 #include "coin.h"
+#include "Pippe.h"
 #include "p2List.h"
 
 #define MAX_SNAKE 2
 
 struct PhysBody3D;
 struct PhysMotor3D;
+class Pipe;
 
 class ModuleSceneIntro : public Module
 {

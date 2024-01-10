@@ -4,6 +4,7 @@
 #include "p2List.h"
 #include "Primitive.h"
 #include "coin.h"
+#include "Pippe.h"
 
 #include "Bullet/include/btBulletDynamicsCommon.h"
 
@@ -14,6 +15,7 @@ class DebugDrawer;
 struct PhysBody3D;
 struct PhysVehicle3D;
 struct VehicleInfo;
+class Pipe;
 
 class ModulePhysics3D : public Module
 {
@@ -36,13 +38,14 @@ public:
 	vec3 ApplyAerodynamics(PhysBody3D* body, float deltaTime);
 
 	Coin* AddCoin(const Cylinder& cylinder, float mass = 1.0f);
-	Pipe* AddPipe(const Cylinder& cylinder);
+	Pipe* AddPipe(vec3 position, int height, Color colour);
 
 	void AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec3& anchorA, const vec3& anchorB);
 	void AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec3& anchorA, const vec3& anchorB, const vec3& axisS, const vec3& axisB, bool disable_collision = false);
 
 private:
 
+	bool antiGravity = false;
 	bool debug;
 
 	btDefaultCollisionConfiguration*	collision_conf;

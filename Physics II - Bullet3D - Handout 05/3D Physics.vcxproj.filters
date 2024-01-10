@@ -146,5 +146,8 @@
     <ClCompile Include="Utilities.h">
       <Filter>Sources\Tools</Filter>
     </ClCompile>
+    <ClCompile Include="Pippe.h">
+      <Filter>Sources\Modules\Game</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

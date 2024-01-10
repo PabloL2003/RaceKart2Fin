@@ -5,7 +5,7 @@
 
 struct PhysVehicle3D;
 
-#define MAX_ACCELERATION 350
+#define MAX_ACCELERATION 400
 #define TURN_DEGREES 15.0f * DEGTORAD
 #define BRAKE_POWER 1000.0f
 
@@ -23,6 +23,7 @@ public:
 
 public:
 
+	bool victory = false;
 	PhysBody3D* object;
 	Cube* mushrooms[3] = { nullptr };
 

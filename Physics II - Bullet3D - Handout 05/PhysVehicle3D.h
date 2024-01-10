@@ -48,6 +48,7 @@ public:
 	void Render();
 	void ApplyEngineForce(float force);
 	void Brake(float force);
+	void ResetCarOrientation(float angle);
 	void Turn(float degrees);
 	float GetKmh() const;
 public:
