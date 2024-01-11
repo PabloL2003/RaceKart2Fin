@@ -14,7 +14,7 @@ ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Modul
 ModuleSceneIntro::~ModuleSceneIntro()
 {}
 
-void ModuleSceneIntro::addCube(vec3 pos, vec3 size, Color rgb, float rtx, float rty, float rtz,int id) {
+void ModuleSceneIntro::addCube(vec3 pos, vec3 size, Color rgb, float rtx, float rty, float rtz, int id) {
 
 	// id 5 = arena id 4 = pared id 2 = carretera//
 
@@ -23,6 +23,7 @@ void ModuleSceneIntro::addCube(vec3 pos, vec3 size, Color rgb, float rtx, float 
 	cube.SetPos(pos.x, pos.y, pos.z);
 	cube.size = size;
 	cube.color = rgb;
+	
 
 	if (rtx != 0)
 		cube.SetRotation(rtx, { 1,0,0 });
@@ -37,6 +38,7 @@ void ModuleSceneIntro::addCube(vec3 pos, vec3 size, Color rgb, float rtx, float 
 	App->physics->AddBody(cube, 0);
 	Borderblocks.add(cube);
 
+	
 
 }
 // Load assets
@@ -56,8 +58,13 @@ bool ModuleSceneIntro::Start()
 
 
 	//floor//
-	addCube({ 0,0,0 }, { 200,0.2f,400 }, { 255,255,0 }, 0, 0, 0,5);
+	/*addCube({ 0,0,0 }, { 200,0.2f,400 }, { 255,255,0 }, 0, 0, 0,5);*/
 
+	sand.SetPos(0, 0, 0);
+	sand.size.Set(200, 0.1f, 400);
+	sand.color.Set(255,255,0);
+	sandBody = App->physics->AddBody(sand, 0);
+	sandBody->id = 4;
 
 	//short wall//
 	addCube({ -100,2,-200 }, { 50,6,6 }, { 0,255,0 }, 0, 0, 0,4);
@@ -219,7 +226,7 @@ update_status ModuleSceneIntro::Update(float dt)
 
 			// Homebrew collision detection for sensors
 			if ((Xdistance > -2 && Xdistance < 2) && (Ydistance > -2 && Ydistance < 2) && (Zdistance > -2 && Zdistance < 2) && !currentItem->data->pendingToDelete) {
-				LOG("car touch coing");
+				LOG("car touch coin");
 				currentItem->data->pendingToDelete = true;
 
 				currentItem = currentItem->next;
@@ -245,13 +252,12 @@ update_status ModuleSceneIntro::Update(float dt)
 		currentItemP = currentItemP->next;
 	}
 
+	sand.Render();
 
 	return UPDATE_CONTINUE;
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
-
-
 	LOG("Collision");
 }

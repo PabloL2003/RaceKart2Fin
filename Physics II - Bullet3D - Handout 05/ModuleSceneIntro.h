@@ -50,7 +50,8 @@ public:
 	PhysMotor3D* left_wheel;
 	PhysMotor3D* right_wheel;
 
-	Cube box;
+	Cube sand;
+	PhysBody3D* sandBody;
 
 	p2List<Coin*> myCoins;
 	p2List<Pipe*> myPipes;

@@ -5,6 +5,7 @@
 #include "PhysVehicle3D.h"
 #include "PhysBody3D.h"
 #include "ModuleCamera3D.h"
+#include "SDL/include/SDL.h"
 
 #define COIN_REQUIREMENT 10
 
@@ -100,8 +101,10 @@ bool ModulePlayer::Start()
 	car.wheels[3].steering = false;
 
 	vehicle = App->physics->AddVehicle(car);
-	vehicle->SetPos(0, 12, 10);
+	vehicle->SetPos(-12, 4, -12);
 	float orbDistance = 4.0f;
+
+	teleportPos = { -12,4,-12 };
 
 	for (int i = 0; i < 3; ++i) {
 		mushrooms[i] = new Cube(1, 1, 1);
@@ -113,12 +116,25 @@ bool ModulePlayer::Start()
 		object->SetAsSensor(true);
 	}
 
-	
+	coinCollectMinutes = 0;
+	coinCollectSeconds = 0;
+	coinCollectMilliseconds = 0;
+	timerRunning = false;
 
+	teleportTransform[0] = 1;
+	teleportTransform[1] = 0;
+	teleportTransform[2] = 0;
 	
+	teleportTransform[4] = 0;
+	teleportTransform[5] = 1;
+	teleportTransform[6] = 0;
+	
+	teleportTransform[8] = 0;
+	teleportTransform[9] = 0;
+	teleportTransform[10] = 1;
 
-	
-	
+	frictionCoefficient = 0.0f;
+
 	return true;
 }
 
@@ -180,11 +196,31 @@ update_status ModulePlayer::Update(float dt)
 		vehicle->ApplyEngineForce(acceleration);
 	}
 
-	if (coins > 10) {
+	if (coins >= 5) {
 
+		if (timerRunning)
+		{
+			timerRunning = false;
+		}
 		// make win function
 
 
+	}
+	else
+	{
+		if (!timerRunning && coins >= 0) {
+			timerRunning = true;
+			startTime = SDL_GetTicks();	
+		}
+
+		if (timerRunning) {
+			Uint32 currentTime = SDL_GetTicks();
+			Uint32 elapsedTime = currentTime - startTime;
+
+			coinCollectMinutes = elapsedTime / (1000 * 60);
+			coinCollectSeconds = (elapsedTime / 1000) % 60;
+			coinCollectMilliseconds = elapsedTime % 1000;
+		}
 	}
 
 	// Boosting power logic
@@ -219,6 +255,23 @@ update_status ModulePlayer::Update(float dt)
 
 	}
 
+	if (vehicle->GetPosition().getY() <= 0.0f) {
+		Teleport();
+	}
+
+	if (vehicle->GetPosition().getY() < 0.5f) {
+		frictionCoefficient = 1.0f;
+		ChangeFriction(frictionCoefficient);
+	}
+	else
+	{
+		frictionCoefficient = 5000.0f;
+		ChangeFriction(frictionCoefficient);
+	}
+
+	
+	
+
 	
 	btVector3 vehicleForwardVector = vehicle->GetForwardVector();
 	btVector3 cameraPt = vehicle->GetPosition() - vehicleForwardVector * 10.0f + btVector3(0.0f, 5.0f, 0.0f);
@@ -237,11 +290,28 @@ update_status ModulePlayer::Update(float dt)
 	}
 
 
-	char title[80];
-	sprintf_s(title, "%.1f Km/h   Coins: %d   DragForce = %f, ,%f , %f ", vehicle->GetKmh(), coins, myDrag.x() , myDrag.y() , myDrag.z());
+	char title[170];
+	sprintf_s(title, "%.1f Km/h   Coins: %d   DragForce = %f, ,%f , %f   Position = %f, %f, %f   Friction = %f    Timer: %02d:%02d:%03d", vehicle->GetKmh(), coins, myDrag.x() , myDrag.y() , myDrag.z(), vehicle->GetPosition().getX(), vehicle->GetPosition().getY(), vehicle->GetPosition().getZ(), frictionCoefficient, coinCollectMinutes, coinCollectSeconds, coinCollectMilliseconds);
 	App->window->SetTitle(title);
 
 	return UPDATE_CONTINUE;
+}
+
+void ModulePlayer::Teleport()
+{
+	btVector3 a = { 0,0,0 };
+	vehicle->SetTransform(teleportTransform.M);
+	vehicle->body->setAngularVelocity(a);
+	vehicle->body->setLinearVelocity(a);
+	vehicle->SetPos(teleportPos.x, teleportPos.y, teleportPos.z);
+}
+
+void ModulePlayer::ChangeFriction(float friction)
+{
+	vehicle->vehicle->m_wheelInfo[0].m_frictionSlip = friction;
+	vehicle->vehicle->m_wheelInfo[1].m_frictionSlip = friction;
+	vehicle->vehicle->m_wheelInfo[2].m_frictionSlip = friction;
+	vehicle->vehicle->m_wheelInfo[3].m_frictionSlip = friction;
 }
 
 

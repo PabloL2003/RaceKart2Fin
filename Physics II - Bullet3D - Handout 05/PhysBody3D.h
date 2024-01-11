@@ -55,6 +55,7 @@ public:
 
 public:
 	p2List<Module*> collision_listeners;
+	int id = 0;
 };
 
 #endif // __PhysBody3D_H__

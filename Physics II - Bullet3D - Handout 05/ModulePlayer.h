@@ -2,6 +2,7 @@
 #include "Module.h"
 #include "Globals.h"
 #include "p2Point.h"
+#include "SDL/include/SDL.h"
 
 struct PhysVehicle3D;
 
@@ -17,8 +18,9 @@ public:
 
 	bool Start();
 	update_status Update(float dt);
+	void Teleport();
+	void ChangeFriction(float friction);
 	bool CleanUp();
-
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 
 public:
@@ -44,4 +46,14 @@ public:
 	float turn;
 	float acceleration;
 	float brake;
+	float frictionCoefficient;
+
+	int coinCollectMinutes;
+	int coinCollectSeconds;
+	int coinCollectMilliseconds;
+	bool timerRunning;
+	Uint32 startTime;
+
+	vec3 teleportPos;
+	mat4x4 teleportTransform;
 };
