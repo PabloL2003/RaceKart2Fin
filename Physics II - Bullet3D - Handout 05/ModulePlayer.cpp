@@ -143,6 +143,31 @@ bool ModulePlayer::CleanUp()
 {
 	LOG("Unloading player");
 
+	//delete mushrooms and create new ones
+	for (int i = 0; i < 3; ++i) {
+		delete mushrooms[i];
+		mushrooms[i] = nullptr;
+	}
+
+	float orbDistance = 4.0f;
+
+	for (int i = 0; i < 3; ++i) {
+		mushrooms[i] = new Cube(1, 1, 1);
+
+		object = App->physics->AddBody(Cube(1, 1, 1), 1);
+		object->SetPos(i * 23, 20, 10 + orbDistance);
+		mushrooms[i]->pbody = object;
+		App->physics->AddConstraintHinge(*vehicle, *object, vec3(0, 2, 0), vec3(0, 0, -orbDistance), vec3(0, 1, 0), vec3(0, 1, 0), true);
+		object->SetAsSensor(true);
+	}
+
+	coins = 0;
+
+	//resetting vehicle position
+	vehicle->SetPos(-12, 4, -12);
+	vehicle->body->setAngularVelocity(btVector3(0, 0, 0));
+	vehicle->body->setLinearVelocity(btVector3(0, 0, 0));
+
 	return true;
 }
 
@@ -198,12 +223,15 @@ update_status ModulePlayer::Update(float dt)
 
 	if (coins >= 5) {
 
+		App->restartGame = true;
+		
 		if (timerRunning)
 		{
 			timerRunning = false;
 		}
-		// make win function
-
+		//restart game
+		
+		
 
 	}
 	else

@@ -110,6 +110,18 @@ update_status Application::Update()
 		item = item->next;
 	}
 
+	if (input->GetKey(SDL_SCANCODE_F8) == KEY_DOWN)
+	{
+		restartGame = true;
+	}
+
+	if (restartGame)
+	{
+		scene_intro->CleanUp();
+		player->CleanUp();
+		restartGame = false;
+	}
+
 	FinishUpdate();
 	return ret;
 }
