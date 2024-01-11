@@ -192,18 +192,17 @@ bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
 
-	myCoins.clear();
-	
-	for (int i = 0; i < 20; ++i) {
+	//reset coins and create new ones
+	p2List_item<Coin*>* currentItem = myCoins.getFirst();
 
-		Cylinder cc = Cylinder(1.0f, 0.2f);
-		cc.SetPos(i * 12, 1.5f, i * 5);
-		Coin* c = App->physics->AddCoin(cc);
-		myCoins.add(c);
-		c->Shape->color = Color(1, 1, 0, 1);
-		c->collision_listeners.add(this);
-
+	while (currentItem != NULL) {
+		currentItem->data->pendingToDelete = true;
+		currentItem = currentItem->next;
 	}
+
+	myCoins.clear();
+
+	
 
 	return true;
 }

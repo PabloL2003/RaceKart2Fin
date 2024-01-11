@@ -163,6 +163,10 @@ bool ModulePlayer::CleanUp()
 
 	coins = 0;
 
+	coinCollectMinutes = 0;
+	coinCollectSeconds = 0;
+	coinCollectMilliseconds = 0;
+
 	//resetting vehicle position
 	vehicle->SetPos(-12, 4, -12);
 	vehicle->body->setAngularVelocity(btVector3(0, 0, 0));
