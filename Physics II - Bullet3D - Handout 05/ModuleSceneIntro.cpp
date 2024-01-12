@@ -253,7 +253,7 @@ bool ModuleSceneIntro::CleanUp()
 	p2List_item<Coin*>* currentItem = myCoins.getFirst();
 
 	while (currentItem != NULL) {
-		currentItem->data->pendingToDelete = true;
+		currentItem->data->touched = false;
 		currentItem = currentItem->next;
 	}
 
@@ -282,7 +282,7 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	while (currentItem != NULL) {
 
-		if (currentItem->data->pendingToDelete == false) {
+		if (currentItem->data->pendingToDelete == false && currentItem->data->touched == false) {
 			currentItem->data->Update();
 
 
@@ -296,12 +296,13 @@ update_status ModuleSceneIntro::Update(float dt)
 			// Homebrew collision detection for sensors
 			if ((Xdistance > -2 && Xdistance < 2) && (Ydistance > -2 && Ydistance < 2) && (Zdistance > -2 && Zdistance < 2) && !currentItem->data->pendingToDelete) {
 				LOG("car touch coin");
-				currentItem->data->pendingToDelete = true;
+				//currentItem->data->pendingToDelete = true;
 
 				currentItem = currentItem->next;
 				App->audio->PlayFx(coinFx);
 				App->player->extraAcceleration += 50;
 				App->player->coins++;
+				currentItem->data->touched = true;
 
 			}
 			else {

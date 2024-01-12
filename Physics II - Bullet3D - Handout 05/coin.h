@@ -25,12 +25,14 @@ public:
 
 		this->SetAsSensor(true);
 		Shape = new Cylinder(1, 0.2f);
+		touched = false;
 	}
 
+	bool touched = false;
 
 	void Update() {
 
-		if (body != nullptr && !pendingToDelete) {
+		if (body != nullptr) {
 
 			Shape->Update(this);
 
