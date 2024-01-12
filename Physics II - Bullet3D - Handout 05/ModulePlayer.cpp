@@ -173,6 +173,7 @@ bool ModulePlayer::CleanUp()
 	vehicle->SetPos(-26, 1.5f, 10);
 	vehicle->body->setAngularVelocity(btVector3(0, 0, 0));
 	vehicle->body->setLinearVelocity(btVector3(0, 0, 0));
+
 	btVector3 a = { 0,0,0 };
 	vehicle->SetTransform(teleportTransform.M);
 	vehicle->body->setAngularVelocity(a);
@@ -302,16 +303,27 @@ update_status ModulePlayer::Update(float dt)
 		Teleport();
 	}
 
-	if (vehicle->GetPosition().getY() < 0.5f) {
+	if (vehicle->GetPosition().getY() < 0.5f && !debuggingFriction) {
 		frictionCoefficient = 1.0f;
 		ChangeFriction(frictionCoefficient);
 	}
-	else
+	else if(!debuggingFriction)
 	{
 		frictionCoefficient = 5000.0f;
 		ChangeFriction(frictionCoefficient);
 	}
 
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN) {
+
+		if (debuggingFriction) { debuggingFriction = false; }
+		else {
+
+			debuggingFriction = true;
+
+			frictionCoefficient = 10000;
+			ChangeFriction(10000);
+		}
+	}
 	
 	
 
