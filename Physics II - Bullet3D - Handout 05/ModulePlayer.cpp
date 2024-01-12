@@ -101,10 +101,10 @@ bool ModulePlayer::Start()
 	car.wheels[3].steering = false;
 
 	vehicle = App->physics->AddVehicle(car);
-	vehicle->SetPos(-12, 4, -12);
+	vehicle->SetPos(-22, 4, -8);
 	float orbDistance = 4.0f;
 
-	teleportPos = { -12,4,-12 };
+	teleportPos = { -22,4,-8 };
 
 	for (int i = 0; i < 3; ++i) {
 		mushrooms[i] = new Cube(1, 1, 1);

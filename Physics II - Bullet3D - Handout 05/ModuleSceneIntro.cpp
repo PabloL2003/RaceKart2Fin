@@ -175,13 +175,70 @@ bool ModuleSceneIntro::Start()
 		c->collision_listeners.add(this);
 
 	}
-	
+
+	//red pipes
+
+
+	Pipe* myPipe8 = App->physics->AddPipe(vec3(-58, 3, -80), 4, Color{ 1, 0 ,0 });
+		myPipes.add(myPipe8);
+
+
+	/*ejemplo
+	Pipe* myPipe9 = App->physics->AddPipe(vec3(5, 3, 5), 4, Color{ 1, 0 ,0 });
+		myPipes.add(myPipe9);*/
+
+	Pipe* myPipe10 = App->physics->AddPipe(vec3(25, 3, 25), 4, Color{ 1, 0 ,0 });
+		myPipes.add(myPipe10);
+
+	Pipe* myPipe11 = App->physics->AddPipe(vec3(-5, 3, 25), 4, Color{ 1, 0 ,0 });
+		myPipes.add(myPipe11);
+
+	Pipe* myPipe12 = App->physics->AddPipe(vec3(10, 3, 45), 4, Color{ 1, 0 ,0 });
+		myPipes.add(myPipe12);
+
+	Pipe* myPipe13 = App->physics->AddPipe(vec3(-5, 3, 65), 4, Color{ 1, 0 ,0 });
+		myPipes.add(myPipe13);
+
+	Pipe* myPipe17 = App->physics->AddPipe(vec3(40, 3, -50), 4, Color{ 1, 0 ,0 });
+		myPipes.add(myPipe17);
+
+	Pipe* myPipe18 = App->physics->AddPipe(vec3(-15, 3, -30), 4, Color{ 1, 0 ,0 });
+		myPipes.add(myPipe18);
+
+		//green pipes
+
+	/*ejemplo
 	Pipe* myPipe = App->physics->AddPipe(vec3(0, 3, 6), 8, Color{0, 0.6588 ,0});
-		myPipes.add(myPipe);
+		myPipes.add(myPipe);*/
 		
-		Pipe* myPipe2 = App->physics->AddPipe(vec3(5, 3, 5), 4, Color{ 1, 0 ,0 });
+
+	Pipe* myPipe2 = App->physics->AddPipe(vec3(-74, 3, 6), 8, Color{ 0, 0.6588 ,0 });
 		myPipes.add(myPipe2);
 	
+	Pipe* myPipe3 = App->physics->AddPipe(vec3(-94, 3, -30), 8, Color{ 0, 0.6588 ,0 });
+		myPipes.add(myPipe3);
+
+	Pipe* myPipe4 = App->physics->AddPipe(vec3(-94, 3, 30), 8, Color{ 0, 0.6588 ,0 });
+		myPipes.add(myPipe4);
+
+	Pipe* myPipe5 = App->physics->AddPipe(vec3(-74, 3, 66), 8, Color{ 0, 0.6588 ,0 });
+		myPipes.add(myPipe5);
+
+
+	Pipe* myPipe6 = App->physics->AddPipe(vec3(-74, 3, -66), 8, Color{ 0, 0.6588 ,0 });
+		myPipes.add(myPipe6);
+
+	Pipe* myPipe7 = App->physics->AddPipe(vec3(-25, 3, -80), 8, Color{ 0, 0.6588 ,0 });
+		myPipes.add(myPipe7);
+
+	Pipe* myPipe14 = App->physics->AddPipe(vec3(-50, 3, 100), 8, Color{ 0, 0.6588 ,0 });
+		myPipes.add(myPipe14);
+
+	Pipe* myPipe15 = App->physics->AddPipe(vec3(10, 3, -20), 8, Color{ 0, 0.6588 ,0 });
+		myPipes.add(myPipe15);
+
+	Pipe* myPipe16 = App->physics->AddPipe(vec3(10, 3, -60), 8, Color{ 0, 0.6588 ,0 });
+		myPipes.add(myPipe16);
 
 
 	return ret;
