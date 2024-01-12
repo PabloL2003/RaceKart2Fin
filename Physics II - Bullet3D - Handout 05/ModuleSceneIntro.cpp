@@ -172,7 +172,7 @@ bool ModuleSceneIntro::Start()
 		Coin* c = App->physics->AddCoin(cc);
 		myCoins.add(c);
 		c->Shape->color = Color(1, 1, 0, 1);
-		c->collision_listeners.add(this);
+		c->collision_listeners.add(App->player);
 
 	}
 
@@ -257,8 +257,6 @@ bool ModuleSceneIntro::CleanUp()
 		currentItem = currentItem->next;
 	}
 
-	myCoins.clear();
-
 	
 
 	return true;
@@ -294,20 +292,21 @@ update_status ModuleSceneIntro::Update(float dt)
 			float Zdistance = abs(coinPos.z()) - abs(carPos.z());
 
 			// Homebrew collision detection for sensors
-			if ((Xdistance > -2 && Xdistance < 2) && (Ydistance > -2 && Ydistance < 2) && (Zdistance > -2 && Zdistance < 2) && !currentItem->data->pendingToDelete) {
-				LOG("car touch coin");
-				//currentItem->data->pendingToDelete = true;
+			//if ((Xdistance > -2 && Xdistance < 2) && (Ydistance > -2 && Ydistance < 2) && (Zdistance > -2 && Zdistance < 2) && !currentItem->data->pendingToDelete) {
+			//	LOG("car touch coin");
+			//	//currentItem->data->pendingToDelete = true;
 
-				currentItem = currentItem->next;
-				App->audio->PlayFx(coinFx);
-				App->player->extraAcceleration += 50;
-				App->player->coins++;
-				currentItem->data->touched = true;
+			//	currentItem = currentItem->next;
+			//	App->audio->PlayFx(coinFx);
+			//	App->player->extraAcceleration += 50;
+			//	App->player->coins++;
+			//	currentItem->data->touched = true;
 
-			}
-			else {
-				currentItem = currentItem->next;
-			}
+			//}
+			//else {
+			//	currentItem = currentItem->next;
+			//}
+			currentItem = currentItem->next;
 		}
 		else {
 			currentItem = currentItem->next;

@@ -22,13 +22,12 @@ public:
 
 	
 	void Awake() {
-
+		is_coin = true;
 		this->SetAsSensor(true);
 		Shape = new Cylinder(1, 0.2f);
 		touched = false;
 	}
 
-	bool touched = false;
 
 	void Update() {
 
