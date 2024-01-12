@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "p2Point.h"
 #include "SDL/include/SDL.h"
+#include "Timer.h"
 
 struct PhysVehicle3D;
 
@@ -53,6 +54,8 @@ public:
 	int coinCollectMilliseconds;
 	bool timerRunning;
 	Uint32 startTime;
+
+	Timer SpawningTimer;
 
 	vec3 teleportPos;
 	mat4x4 teleportTransform;

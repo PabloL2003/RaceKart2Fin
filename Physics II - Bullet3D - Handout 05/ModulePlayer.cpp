@@ -101,10 +101,11 @@ bool ModulePlayer::Start()
 	car.wheels[3].steering = false;
 
 	vehicle = App->physics->AddVehicle(car);
-	vehicle->SetPos(-22, 4, -8);
+	vehicle->SetPos(-26, 1.5f, 10);
 	float orbDistance = 4.0f;
+	SpawningTimer.Start();
 
-	teleportPos = { -22,4,-8 };
+	teleportPos = { -26,1.5f,10 };
 
 	for (int i = 0; i < 3; ++i) {
 		mushrooms[i] = new Cube(1, 1, 1);
@@ -190,6 +191,10 @@ vec3 btVecToMath2(btVector3 v) {
 update_status ModulePlayer::Update(float dt)
 {
 	turn = acceleration = brake = 0.0f;
+
+	if (SpawningTimer.Read() < 700) {
+		vehicle->body->setAngularVelocity( btVector3(0, 0, 0));
+	}
 
 
 	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
