@@ -161,6 +161,7 @@ bool ModulePlayer::CleanUp()
 	//	App->physics->AddConstraintHinge(*vehicle, *object, vec3(0, 2, 0), vec3(0, 0, -orbDistance), vec3(0, 1, 0), vec3(0, 1, 0), true);
 	//	object->SetAsSensor(true);
 	//}
+	numboosts = 3;
 
 	coins = 0;
 
@@ -172,6 +173,12 @@ bool ModulePlayer::CleanUp()
 	vehicle->SetPos(-26, 1.5f, 10);
 	vehicle->body->setAngularVelocity(btVector3(0, 0, 0));
 	vehicle->body->setLinearVelocity(btVector3(0, 0, 0));
+
+	btVector3 a = { 0,0,0 };
+	vehicle->SetTransform(teleportTransform.M);
+	vehicle->body->setAngularVelocity(a);
+	vehicle->body->setLinearVelocity(a);
+	vehicle->SetPos(teleportPos.x, teleportPos.y, teleportPos.z);
 
 	return true;
 }
@@ -276,7 +283,7 @@ update_status ModulePlayer::Update(float dt)
 	if (deaccelerated) {
 		deceleration--;
 		
-		vehicle->ApplyEngineForce(-MAX_ACCELERATION *12 );  // Applying negative force for deacceleration
+		vehicle->ApplyEngineForce(-MAX_ACCELERATION *10 );  // Applying negative force for deacceleration
 		if (deceleration <= 0) {
 			deaccelerated = false;
 			deceleration = 70;
@@ -296,16 +303,27 @@ update_status ModulePlayer::Update(float dt)
 		Teleport();
 	}
 
-	if (vehicle->GetPosition().getY() < 0.5f) {
+	if (vehicle->GetPosition().getY() < 0.5f && !debuggingFriction) {
 		frictionCoefficient = 1.0f;
 		ChangeFriction(frictionCoefficient);
 	}
-	else
+	else if(!debuggingFriction)
 	{
 		frictionCoefficient = 5000.0f;
 		ChangeFriction(frictionCoefficient);
 	}
 
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN) {
+
+		if (debuggingFriction) { debuggingFriction = false; }
+		else {
+
+			debuggingFriction = true;
+
+			frictionCoefficient = 10000;
+			ChangeFriction(10000);
+		}
+	}
 	
 	
 
@@ -355,5 +373,14 @@ void ModulePlayer::ChangeFriction(float friction)
 void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 
 	LOG("Collision");
+	if (body1->is_coin && body1->touched == false) {
+		
+		App->audio->PlayFx(App->scene_intro->coinFx);
+		App->player->extraAcceleration += 50;
+		App->player->coins++;
+		body1->touched = true;
+
+	}
+
 
 };

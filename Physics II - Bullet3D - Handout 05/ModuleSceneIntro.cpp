@@ -55,7 +55,7 @@ bool ModuleSceneIntro::Start()
 	//App->physics->AddBody(box, 50000.0f);
 
 	coinFx = App->audio->LoadFx("Assets/coin.wav");
-
+	App->audio->PlayMusic("Assets/101. SNES Mario Circuit 3.mp3");
 
 	//floor//
 	/*addCube({ 0,0,0 }, { 200,0.2f,400 }, { 255,255,0 }, 0, 0, 0,5);*/
@@ -165,16 +165,80 @@ bool ModuleSceneIntro::Start()
 	addCube({ 34,0,-85 }, { 4,0.3f,15 }, { 1,1,1 }, -15, 0, 0, 2);
 
 
-	for (int i = 0; i < 20; ++i) {
+	/*for (int i = 0; i < 20; ++i) {
 
 		Cylinder cc = Cylinder(1.0f, 0.2f);
 		cc.SetPos(i * 12, 1.5f, i * 5);
 		Coin* c = App->physics->AddCoin(cc);
 		myCoins.add(c);
 		c->Shape->color = Color(1, 1, 0, 1);
-		c->collision_listeners.add(this);
+		c->collision_listeners.add(App->player);
 
-	}
+	}*/
+
+	//coin 1 
+	Cylinder cc = Cylinder(1.0f, 0.2f);
+	cc.SetPos( 30, 1.5f, 36);
+	Coin* c = App->physics->AddCoin(cc);
+	myCoins.add(c);
+	c->Shape->color = Color(1, 1, 0, 1);
+	c->collision_listeners.add(App->player);
+
+	//coin 2
+	Cylinder dd = Cylinder(1.0f, 0.2f);
+	dd.SetPos(0, 1.5f, 82);
+	Coin* d = App->physics->AddCoin(dd);
+	myCoins.add(d);
+	d->Shape->color = Color(1, 1, 0, 1);
+	d->collision_listeners.add(App->player);
+
+
+	//coin 3
+	Cylinder ee = Cylinder(1.0f, 0.2f);
+	ee.SetPos(-85, 1.5f, 5);
+	Coin* e = App->physics->AddCoin(ee);
+	myCoins.add(e);
+	e->Shape->color = Color(1, 1, 0, 1);
+	e->collision_listeners.add(App->player);
+
+
+	//coin 4
+	Cylinder ff = Cylinder(1.0f, 0.2f);
+	ff.SetPos(-20, 1.5f,- 72);
+	Coin* f = App->physics->AddCoin(ff);
+	myCoins.add(f);
+	f->Shape->color = Color(1, 1, 0, 1);
+	f->collision_listeners.add(App->player);
+
+
+	//coin 5
+	Cylinder gg = Cylinder(1.0f, 0.2f);
+	gg.SetPos(20, 1.5f,-45);
+	Coin* g = App->physics->AddCoin(gg);
+	myCoins.add(g);
+	g->Shape->color = Color(1, 1, 0, 1);
+	g->collision_listeners.add(App->player);
+
+	//coin 6
+	Cylinder hh = Cylinder(1.0f, 0.2f);
+	hh.SetPos(35, 1.5f, 80);
+	Coin* h = App->physics->AddCoin(hh);
+	myCoins.add(h);
+	h->Shape->color = Color(1, 1, 0, 1);
+	h->collision_listeners.add(App->player);
+
+	//coin 7
+	Cylinder ii = Cylinder(1.0f, 0.2f);
+	ii.SetPos(-75, 1.5f, 100);
+	Coin* i = App->physics->AddCoin(ii);
+	myCoins.add(i);
+	i->Shape->color = Color(1, 1, 0, 1);
+	i->collision_listeners.add(App->player);
+
+
+
+
+
 
 	//red pipes
 
@@ -253,11 +317,9 @@ bool ModuleSceneIntro::CleanUp()
 	p2List_item<Coin*>* currentItem = myCoins.getFirst();
 
 	while (currentItem != NULL) {
-		currentItem->data->pendingToDelete = true;
+		currentItem->data->touched = false;
 		currentItem = currentItem->next;
 	}
-
-	myCoins.clear();
 
 	
 
@@ -282,7 +344,7 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	while (currentItem != NULL) {
 
-		if (currentItem->data->pendingToDelete == false) {
+		if (currentItem->data->pendingToDelete == false && currentItem->data->touched == false) {
 			currentItem->data->Update();
 
 
@@ -294,19 +356,21 @@ update_status ModuleSceneIntro::Update(float dt)
 			float Zdistance = abs(coinPos.z()) - abs(carPos.z());
 
 			// Homebrew collision detection for sensors
-			if ((Xdistance > -2 && Xdistance < 2) && (Ydistance > -2 && Ydistance < 2) && (Zdistance > -2 && Zdistance < 2) && !currentItem->data->pendingToDelete) {
-				LOG("car touch coin");
-				currentItem->data->pendingToDelete = true;
+			//if ((Xdistance > -2 && Xdistance < 2) && (Ydistance > -2 && Ydistance < 2) && (Zdistance > -2 && Zdistance < 2) && !currentItem->data->pendingToDelete) {
+			//	LOG("car touch coin");
+			//	//currentItem->data->pendingToDelete = true;
 
-				currentItem = currentItem->next;
-				App->audio->PlayFx(coinFx);
-				App->player->extraAcceleration += 50;
-				App->player->coins++;
+			//	currentItem = currentItem->next;
+			//	App->audio->PlayFx(coinFx);
+			//	App->player->extraAcceleration += 50;
+			//	App->player->coins++;
+			//	currentItem->data->touched = true;
 
-			}
-			else {
-				currentItem = currentItem->next;
-			}
+			//}
+			//else {
+			//	currentItem = currentItem->next;
+			//}
+			currentItem = currentItem->next;
 		}
 		else {
 			currentItem = currentItem->next;

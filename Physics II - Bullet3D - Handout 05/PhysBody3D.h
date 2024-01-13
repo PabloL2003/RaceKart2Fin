@@ -15,6 +15,9 @@ public:
 
 	bool is_sensor = false;
 	bool pendingToDelete = false;
+	bool is_coin = false;
+	bool touched = false;
+
 
 	PhysBody3D(btRigidBody* body);
 	~PhysBody3D();

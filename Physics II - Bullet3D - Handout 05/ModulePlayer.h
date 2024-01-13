@@ -26,6 +26,7 @@ public:
 
 public:
 
+	bool debuggingFriction = false;
 	bool victory = false;
 	PhysBody3D* object;
 	Cube* mushrooms[3] = { nullptr };
