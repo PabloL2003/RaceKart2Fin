@@ -12,6 +12,9 @@ Collect 5 coins as fast as you can in order to beat the game.
 - F - Change the fricction of all surfaces to the same.
 - G - "Deactivate" gravity.
 - R - If car turned around, return it to idle pos.
+- B -Reset of mass.
+- N- Augment mass(fixed value).
+- M-Decrease mass (fixed value).
 - F1- Debug box drawing.
 - F8- reStsrtGame
 
