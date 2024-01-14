@@ -54,8 +54,8 @@ bool ModuleSceneIntro::Start()
 	//box.SetPos(1, 1, 1);
 	//App->physics->AddBody(box, 50000.0f);
 
-	coinFx = App->audio->LoadFx("Assets/coin.wav");
-	App->audio->PlayMusic("Assets/101. SNES Mario Circuit 3.mp3");
+	coinFx = App->audio->LoadFx("Game/Assets/coin.wav");
+	App->audio->PlayMusic("Game/Assets/marioCircuit.wav");
 
 	//floor//
 	/*addCube({ 0,0,0 }, { 200,0.2f,400 }, { 255,255,0 }, 0, 0, 0,5);*/

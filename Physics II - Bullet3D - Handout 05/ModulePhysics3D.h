@@ -37,6 +37,8 @@ public:
 
 	vec3 ApplyAerodynamics(PhysBody3D* body, float deltaTime);
 
+	vec3 ApplyLift(PhysBody3D* body, float deltaTime);
+
 	Coin* AddCoin(const Cylinder& cylinder, float mass = 1.0f);
 	Pipe* AddPipe(vec3 position, int height, Color colour);
 

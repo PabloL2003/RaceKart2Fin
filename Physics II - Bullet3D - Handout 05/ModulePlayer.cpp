@@ -22,6 +22,12 @@ bool ModulePlayer::Start()
 {
 	LOG("Loading player");
 
+	congratulation = App->audio->LoadFx("Game/Assets/tim.wav");
+	welcome = App->audio->LoadFx("Game/Assets/welcome.wav");
+	
+
+	App->audio->PlayFx(welcome);
+
 	VehicleInfo car;
 
 	// Car properties ----------------------------------------
@@ -34,6 +40,8 @@ bool ModulePlayer::Start()
 	car.maxSuspensionTravelCm = 1000.0f;
 	car.frictionSlip = 50.5;
 	car.maxSuspensionForce = 6000.0f;
+
+	vehicleArea = car.chassis_size.x * car.chassis_size.y;
 
 	// Wheel properties ---------------------------------------
 	float connection_height = 1.2f;
@@ -107,6 +115,7 @@ bool ModulePlayer::Start()
 
 	teleportPos = { -26,1.5f,10 };
 
+	// Spawns mushrooms (cube) power ups
 	for (int i = 0; i < 3; ++i) {
 		mushrooms[i] = new Cube(1, 1, 1);
 		
@@ -143,24 +152,8 @@ bool ModulePlayer::Start()
 bool ModulePlayer::CleanUp()
 {
 	LOG("Unloading player");
-
-	////delete mushrooms
-	//for (int i = 0; i < 3; ++i) {
-	//	delete mushrooms[i];
-	//	mushrooms[i] = nullptr;
-	//}
-
-	////volver a crear los mushrooms
-	//float orbDistance = 4.0f;
-	//for (int i = 0; i < 3; ++i) {
-	//	mushrooms[i] = new Cube(1, 1, 1);
-
-	//	object = App->physics->AddBody(Cube(1, 1, 1), 1);
-	//	object->SetPos(i * 23, 20, 10 + orbDistance);
-	//	mushrooms[i]->pbody = object;
-	//	App->physics->AddConstraintHinge(*vehicle, *object, vec3(0, 2, 0), vec3(0, 0, -orbDistance), vec3(0, 1, 0), vec3(0, 1, 0), true);
-	//	object->SetAsSensor(true);
-	//}
+	SpawningTimer.Start();
+	App->audio->PlayFx(congratulation);
 	numboosts = 3;
 
 	coins = 0;
@@ -179,6 +172,7 @@ bool ModulePlayer::CleanUp()
 	vehicle->body->setAngularVelocity(a);
 	vehicle->body->setLinearVelocity(a);
 	vehicle->SetPos(teleportPos.x, teleportPos.y, teleportPos.z);
+	App->audio->PlayFx(congratulation);
 
 	return true;
 }
@@ -299,7 +293,7 @@ update_status ModulePlayer::Update(float dt)
 
 	}
 
-	if (vehicle->GetPosition().getY() <= 0.0f) {
+	if (vehicle->GetPosition().getY() <= -10.0f) {
 		Teleport();
 	}
 
@@ -345,8 +339,8 @@ update_status ModulePlayer::Update(float dt)
 	}
 
 
-	char title[170];
-	sprintf_s(title, "%.1f Km/h   Coins: %d   DragForce = %f, ,%f , %f   Position = %f, %f, %f   Friction = %f    Timer: %02d:%02d:%03d", vehicle->GetKmh(), coins, myDrag.x() , myDrag.y() , myDrag.z(), vehicle->GetPosition().getX(), vehicle->GetPosition().getY(), vehicle->GetPosition().getZ(), frictionCoefficient, coinCollectMinutes, coinCollectSeconds, coinCollectMilliseconds);
+	char title[300];
+	sprintf_s(title, "%.1f Km/h   Coins: %d   DragForce = %f, ,%f , %f  Position = %f, %f, %f   Friction = %f    Timer: %02d:%02d:%03d  LiftForce = %f, %f , %f", vehicle->GetKmh(), coins, myDrag.x() , myDrag.y() , myDrag.z(), vehicle->GetPosition().getX(), vehicle->GetPosition().getY(), vehicle->GetPosition().getZ(), frictionCoefficient, coinCollectMinutes, coinCollectSeconds, coinCollectMilliseconds,myLift.x(), myLift.y(), myLift.z());
 	App->window->SetTitle(title);
 
 	return UPDATE_CONTINUE;

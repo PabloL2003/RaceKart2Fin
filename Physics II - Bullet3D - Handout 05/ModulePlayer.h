@@ -43,6 +43,7 @@ public:
 	vec3 cameraPt;
 
 	btVector3 myDrag;
+	btVector3 myLift;
 
 	PhysVehicle3D* vehicle;
 	float turn;
@@ -56,8 +57,14 @@ public:
 	bool timerRunning;
 	Uint32 startTime;
 
+	float vehicleArea;
+
 	Timer SpawningTimer;
 
 	vec3 teleportPos;
 	mat4x4 teleportTransform;
+
+	uint congratulation;
+	uint welcome;
+	uint yipee;
 };

@@ -72,7 +72,7 @@ bool ModulePhysics3D::Start()
 		world->addRigidBody(body);
 	}
 
-	
+	debug = false;
 
 	return true;
 }
@@ -84,43 +84,70 @@ vec3 ModulePhysics3D::ApplyAerodynamics(PhysBody3D* body, float deltaTime)
 
 	 float dragCoefficient = 0.47f;
 	float airDensity = 1.225f;
-	float area = 2.0f;
+	float area = App->player->vehicleArea;
 	float Vsquared = pow(body->body->getLinearVelocity().x(), 2) + pow(body->body->getLinearVelocity().y(), 2) + pow(body->body->getLinearVelocity().z(), 2);
 	float dragForce = 0.5f * airDensity * Vsquared * dragCoefficient * area;
 	/*float dragForce = 0.5f * airDensity * body->velocity.LengthSquared() * body->dragCoefficient * area;*/
 
 	btVector3 linearVelocity = body->body->getLinearVelocity();
 
-	// Calculate the magnitude (length) of the linear velocity vector
+	
 	btScalar magnitude = linearVelocity.length();
 
 	vec3 dragForceVec = vec3(0, 0, 0);
 
-	// Check if the magnitude is greater than a small threshold to avoid division by zero
+	
 	if (magnitude > 1e-6) 
 	{
-		// Normalize the linear velocity manually
+		// Normalize linear velocity 
 		btVector3 normalizedLinearVelocity = linearVelocity / magnitude;
 		btVector3 drag = body->body->getLinearVelocity().normalized();
 		dragForceVec = vec3(drag.x(), drag.y(), drag.z());
 		//body->velocity.Normalize();
-		dragForceVec.x *= -1;
-		dragForceVec.y *= -1;
-		dragForceVec.z *= -1;
+		dragForceVec.x *= -1 * deltaTime;
+		dragForceVec.y *= -1 * deltaTime;
+		dragForceVec.z *= -1 * deltaTime;
 
 		
-		// 'normalizedLinearVelocity' now contains the normalized linear velocity of the rigid body
+		
 	}
 	return dragForceVec;
 	
+}
+
+vec3 ModulePhysics3D::ApplyLift(PhysBody3D* body, float deltaTime) {
+
+	float liftCoefficient = 0.2f;
+	float airDensity = 1.225f;  // Standard air density at sea level (kg/m^3)
+	float airspeed = body->body->getLinearVelocity().length();
+
+	float liftForceMagnitude = 0.5 * airDensity * airspeed * airspeed * App->player->vehicleArea * liftCoefficient;
+
+	btTransform transform;
+	body->body->getMotionState()->getWorldTransform(transform);
+
+	// Extract the up vector from the transformation matrix
+	btVector3 upVector = transform.getBasis().getColumn(1);  
+	vec3 upDirection(upVector.getX(), upVector.getY(), upVector.getZ());
+
+	// lift force vector
+	vec3 liftForce = liftForceMagnitude * upDirection * deltaTime;
+
+	return liftForce;
+
 }
 
 // ---------------------------------------------------------
 update_status ModulePhysics3D::PreUpdate(float dt)
 {
 	vec3 dragF = ApplyAerodynamics(App->player->vehicle, dt);
+	vec3 liftF = ApplyLift(App->player->vehicle, dt);
 	btVector3 DragVec = btVector3(dragF.x, dragF.y, dragF.z); 
-	App->player->myDrag = DragVec;
+	btVector3 LiftVec = btVector3(liftF.x, liftF.y, liftF.z);
+	App->player->myDrag = DragVec; App->player->myLift = LiftVec;
+
+	App->player->vehicle->body->applyCentralForce(DragVec);
+	App->player->vehicle->body->applyCentralForce(LiftVec);
 	
 	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN) {
 		if(!antiGravity){antiGravity = true;}
@@ -132,8 +159,6 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 		App->player->vehicle->body->applyCentralForce(-(GRAVITY * 700.0));
 	}
 	
-	App->player->vehicle->body->applyCentralForce(DragVec); /*Check that the apply central force is in global scale*/
-	// should also negate the box's weight
 
 	world->stepSimulation(dt, 15);
 
@@ -210,13 +235,6 @@ update_status ModulePhysics3D::Update(float dt)
 
 
 	}
-
-
-	// Iterate all bodies
-
-
-
-
 
 	return UPDATE_CONTINUE;
 }
