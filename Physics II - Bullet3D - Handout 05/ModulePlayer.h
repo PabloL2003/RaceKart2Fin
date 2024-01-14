@@ -67,4 +67,6 @@ public:
 	uint congratulation;
 	uint welcome;
 	uint yipee;
+
+	float mass = 700.0f;
 };

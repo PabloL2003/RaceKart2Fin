@@ -319,15 +319,36 @@ update_status ModulePlayer::Update(float dt)
 		}
 	}
 	
-	
-
-	
 	btVector3 vehicleForwardVector = vehicle->GetForwardVector();
 	btVector3 cameraPt = vehicle->GetPosition() - vehicleForwardVector * 10.0f + btVector3(0.0f, 5.0f, 0.0f);
 
 	App->camera->Look(btVecToMath2( cameraPt), btVecToMath2( vehicle->GetPosition()), true);
 
+	//Change vehicle's mass
 
+	if (App->input->GetKey(SDL_SCANCODE_M) == KEY_DOWN) {
+		float newMass1 = 300.0f;
+
+		btVector3 inertia;
+		vehicle->body->getCollisionShape()->calculateLocalInertia(newMass1, inertia);
+		vehicle->body->setMassProps(newMass1, inertia);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_N) == KEY_DOWN) {
+		float newMass2 = 1000.0f;
+
+		btVector3 inertia;
+		vehicle->body->getCollisionShape()->calculateLocalInertia(newMass2, inertia);
+		vehicle->body->setMassProps(newMass2, inertia);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_B) == KEY_DOWN) {
+		float baseMass = 700.0f;
+
+		btVector3 inertia;
+		vehicle->body->getCollisionShape()->calculateLocalInertia(baseMass, inertia);
+		vehicle->body->setMassProps(baseMass, inertia);
+	}
 	
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
